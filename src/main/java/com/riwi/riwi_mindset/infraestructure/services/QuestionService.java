@@ -1,5 +1,7 @@
 package com.riwi.riwi_mindset.infraestructure.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +11,9 @@ import org.springframework.stereotype.Service;
 import com.riwi.riwi_mindset.api.dto.request.QuestionReq;
 import com.riwi.riwi_mindset.api.dto.response.QuestionResp;
 import com.riwi.riwi_mindset.domain.entities.Question;
+import com.riwi.riwi_mindset.domain.entities.Quiz;
 import com.riwi.riwi_mindset.domain.repositories.QuestionRepository;
+import com.riwi.riwi_mindset.domain.repositories.QuizRepository;
 import com.riwi.riwi_mindset.infraestructure.abstact_service.IQuestionService;
 import com.riwi.riwi_mindset.utils.enums.SortType;
 import com.riwi.riwi_mindset.utils.exceptions.BadRequestException;
@@ -18,10 +22,11 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class QuestionService implements IQuestionService{
+public class QuestionService implements IQuestionService {
     @Autowired
     private final QuestionRepository questionRepository;
-
+    @Autowired
+    private final QuizRepository quizRepository;
 
     @Override
     public QuestionResp create(QuestionReq request) {
@@ -31,8 +36,9 @@ public class QuestionService implements IQuestionService{
 
     @Override
     public void delete(Integer id) {
-       this.questionRepository.delete(this.find(id));
+        this.questionRepository.delete(this.find(id));
     }
+
     @Override
     public QuestionResp get(Integer id) {
         return this.entityToResp(this.find(id));
@@ -40,7 +46,8 @@ public class QuestionService implements IQuestionService{
 
     @Override
     public Page<QuestionResp> getAll(int page, int size, SortType sortType) {
-        if (page <0) page = 0;
+        if (page < 0)
+            page = 0;
 
         PageRequest pagination = null;
 
@@ -49,7 +56,7 @@ public class QuestionService implements IQuestionService{
             case ASC -> pagination = PageRequest.of(page, size, Sort.by(FIELD_BY_SORT).ascending());
             case DESC -> pagination = PageRequest.of(page, size, Sort.by(FIELD_BY_SORT).descending());
         }
-        
+
         return this.questionRepository.findAll(pagination)
                 .map(this::entityToResp);
     }
@@ -59,15 +66,20 @@ public class QuestionService implements IQuestionService{
         Question question = this.find(id);
         question = this.requestToEntity(request);
         question.setIdQuestion(question.getIdQuestion());
-        question.setIdQuiz(question.getIdQuiz());
+        question.setQuiz(question.getQuiz());
         question.setQuestion(question.getQuestion());
         question.setAnswers(question.getAnswers());
         return this.entityToResp(this.questionRepository.save(question));
     }
 
     private Question requestToEntity(QuestionReq request) {
+        // Buscar el Quiz por su id
+        Quiz quiz = quizRepository.findById(request.getQuiz())
+                .orElseThrow(() -> new RuntimeException("Quiz no encontrado"));
+
+        // Crear la entidad Question y asignar los valores
         Question question = new Question();
-        question.setIdQuiz(request.getIdQuiz());
+        question.setQuiz(quiz); // Ahora asignamos el objeto Quiz obtenido
         question.setQuestion(request.getQuestion());
         question.setAnswers(request.getAnswers());
         return question;
@@ -76,7 +88,7 @@ public class QuestionService implements IQuestionService{
     private QuestionResp entityToResp(Question entity) {
         QuestionResp resp = new QuestionResp();
         resp.setIdQuestion(entity.getIdQuestion());
-        resp.setIdQuiz(entity.getIdQuiz());
+        resp.setQuiz(entity.getQuiz());
         resp.setQuestion(entity.getQuestion());
         resp.setAnswers(entity.getAnswers());
         return resp;
@@ -84,9 +96,11 @@ public class QuestionService implements IQuestionService{
 
     private Question find(Integer id) {
         return this.questionRepository.findById(id)
-        .orElseThrow(()-> new BadRequestException("No hay citas con el id suministrado"));
+                .orElseThrow(() -> new BadRequestException("No hay citas con el id suministrado"));
     }
 
-
+    public List<Question> getQuestionsByIdQuiz(Long idQuiz) {
+        return questionRepository.findByQuizId(idQuiz); // Método que busca las preguntas por quizId
+    }
 
 }

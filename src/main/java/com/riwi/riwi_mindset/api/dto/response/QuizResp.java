@@ -10,12 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuizResp {
-    private Long idQuiz;
+    private Long id;
     private String img;
     private String title;
     private String description;
     private Integer quantityQuestions;
-    private Integer tries;
-    private Integer passed;
-    private Integer failed;
+
 }

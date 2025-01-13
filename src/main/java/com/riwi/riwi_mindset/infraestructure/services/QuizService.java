@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class QuizService implements IQuizService{
+public class QuizService implements IQuizService {
 
     @Autowired
     private final QuizRepository quizRepository;
@@ -30,33 +30,31 @@ public class QuizService implements IQuizService{
     }
 
     @Override
-    public QuizResp get(Integer id) {
+    public QuizResp get(Long id) {
         return this.entityToResp(this.find(id));
     }
 
     @Override
-    public QuizResp update(QuizReq request, Integer id) {
+    public QuizResp update(QuizReq request, Long id) {
         Quiz quiz = this.find(id);
         quiz = this.requestToEntity(request);
-        quiz.setIdQuiz(quiz.getIdQuiz());
+        quiz.setId(quiz.getId());
         quiz.setImg(quiz.getImg());
         quiz.setTitle(quiz.getTitle());
         quiz.setDescription(quiz.getDescription());
         quiz.setQuantityQuestions(quiz.getQuantityQuestions());
-        quiz.setTries(quiz.getTries());
-        quiz.setPassed(quiz.getPassed());
-        quiz.setFailed(quiz.getFailed());
         return this.entityToResp(this.quizRepository.save(quiz));
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Long id) {
         this.quizRepository.delete(this.find(id));
     }
 
     @Override
     public Page<QuizResp> getAll(int page, int size, SortType sortType) {
-        if (page <0) page = 0;
+        if (page < 0)
+            page = 0;
 
         PageRequest pagination = null;
 
@@ -65,7 +63,7 @@ public class QuizService implements IQuizService{
             case ASC -> pagination = PageRequest.of(page, size, Sort.by(FIELD_BY_SORT).ascending());
             case DESC -> pagination = PageRequest.of(page, size, Sort.by(FIELD_BY_SORT).descending());
         }
-        
+
         return this.quizRepository.findAll(pagination)
                 .map(this::entityToResp);
     }
@@ -81,21 +79,18 @@ public class QuizService implements IQuizService{
 
     private QuizResp entityToResp(Quiz entity) {
         QuizResp resp = new QuizResp();
-        resp.setIdQuiz(entity.getIdQuiz());
+        resp.setId(entity.getId());
         resp.setImg(entity.getImg());
         resp.setTitle(entity.getTitle());
         resp.setDescription(entity.getDescription());
         resp.setQuantityQuestions(entity.getQuantityQuestions());
-        resp.setTries(entity.getTries());
-        resp.setPassed(entity.getPassed());
-        resp.setFailed(entity.getFailed());
+
         return resp;
     }
 
-    private Quiz find(Integer id) {
+    private Quiz find(Long id) {
         return this.quizRepository.findById(id)
-        .orElseThrow(()-> new BadRequestException("No hay quiz con el id suministrado"));
+                .orElseThrow(() -> new BadRequestException("No hay quiz con el id suministrado"));
     }
 
-    
 }

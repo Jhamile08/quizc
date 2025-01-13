@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,15 +22,14 @@ import lombok.Setter;
 
 @Entity(name = "question")
 @Builder
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idQuestion;
-    @Column(name = "id_quiz")
-    private int idQuiz;
     @Column(nullable = false)
     private String question;
     @Column(nullable = false)
@@ -37,9 +38,13 @@ public class Question {
     @CollectionTable(name = "options")
     private List<String> answers;
 
-    public Question(String question, int idQuiz, List<String> answers){
+    @ManyToOne
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    private Quiz quiz;
+
+    public Question(String question, Quiz quiz, List<String> answers) {
         this.question = question;
-        this.idQuiz = idQuiz;
+        this.quiz = quiz;
         this.answers = answers;
         Collections.shuffle(answers);
     }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.riwi.riwi_mindset.api.dto.request.QuestionReq;
 import com.riwi.riwi_mindset.api.dto.request.QuizReq;
-import com.riwi.riwi_mindset.api.dto.response.QuestionResp;
 import com.riwi.riwi_mindset.api.dto.response.QuizResp;
-import com.riwi.riwi_mindset.infraestructure.abstact_service.IQuestionService;
 import com.riwi.riwi_mindset.infraestructure.abstact_service.IQuizService;
 import com.riwi.riwi_mindset.utils.enums.SortType;
 
@@ -29,6 +27,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/quiz")
+@CrossOrigin(origins = "http://localhost:5173")
 @AllArgsConstructor
 public class QuizController {
     @Autowired
@@ -39,14 +38,15 @@ public class QuizController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestHeader(required = false) SortType sortType) {
-                if (Objects.isNull(sortType)) sortType = SortType.NONE;
+        if (Objects.isNull(sortType))
+            sortType = SortType.NONE;
 
-            return ResponseEntity.ok(this.quizService.getAll(page -1, size, sortType));
+        return ResponseEntity.ok(this.quizService.getAll(page - 1, size, sortType));
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<QuizResp> get(
-            @PathVariable Integer id) {
+            @PathVariable Long id) {
         return ResponseEntity.ok(this.quizService.get(id));
     }
 
@@ -59,13 +59,14 @@ public class QuizController {
     @PutMapping(path = "/{id}")
     public ResponseEntity<QuizResp> update(
             @Validated @RequestBody QuizReq request,
-            @PathVariable Integer id) {
+            @PathVariable Long id) {
         return ResponseEntity.ok(this.quizService.update(request, id));
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         this.quizService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 }

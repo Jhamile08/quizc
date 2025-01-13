@@ -5,19 +5,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Entity
-@Data  
-@NoArgsConstructor 
-@AllArgsConstructor 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Quiz {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idQuiz;
+    private Long id;
 
     private String img;
 
@@ -28,9 +28,4 @@ public class Quiz {
     @Column(name = "quantity_questions")
     private Integer quantityQuestions;
 
-    private Integer tries = 0;
-
-    private Integer passed = 0;
-
-    private Integer failed = 0;
 }

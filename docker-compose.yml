@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://uecbnql5w4v9qaih:L5DnW7ojbH5VowtDhKPB@bmx6m9bjfuay4l6nimmt-mysql.services.clever-cloud.com:3306/bmx6m9bjfuay4l6nimmt
+      - SPRING_DATASOURCE_USERNAME=bmx6m9bjfuay4l6nimmt
+      - SPRING_DATASOURCE_PASSWORD=L5DnW7ojbH5VowtDhKPB
+    depends_on:
+      - quiz_container
+
+  quiz_container:
+    container_name: quiz_container
+    image: mysql:8.0.33 
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"  # Permitir contraseñas vacías
+      MYSQL_ROOT_PASSWORD: 
+      MYSQL_PASSWORD: 
+      MYSQL_DATABASE: quiz_dev
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]

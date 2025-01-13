@@ -1,5 +1,6 @@
 package com.riwi.riwi_mindset.api.controllers;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,27 +21,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.riwi.riwi_mindset.api.dto.request.QuestionReq;
 import com.riwi.riwi_mindset.api.dto.response.QuestionResp;
-import com.riwi.riwi_mindset.infraestructure.abstact_service.IQuestionService;
+import com.riwi.riwi_mindset.domain.entities.Question;
+import com.riwi.riwi_mindset.infraestructure.services.QuestionService;
 import com.riwi.riwi_mindset.utils.enums.SortType;
 
 import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/question")
+@CrossOrigin(origins = "http://localhost:5173")
 @AllArgsConstructor
 public class QuestionController {
     @Autowired
-    private final IQuestionService questionService;
+    private final QuestionService questionService;
 
-    @CrossOrigin(origins = "http://127.0.0.1:5502")
     @GetMapping
     public ResponseEntity<Page<QuestionResp>> getAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestHeader(required = false) SortType sortType) {
-                if (Objects.isNull(sortType)) sortType = SortType.NONE;
+        if (Objects.isNull(sortType))
+            sortType = SortType.NONE;
 
-                return ResponseEntity.ok(this.questionService.getAll(page -1, size, sortType));
+        return ResponseEntity.ok(this.questionService.getAll(page - 1, size, sortType));
     }
 
     @GetMapping(path = "/{id}")
@@ -54,7 +57,7 @@ public class QuestionController {
             @Validated @RequestBody QuestionReq request) {
         return ResponseEntity.ok(this.questionService.create(request));
     }
-    
+
     @PutMapping(path = "/{id}")
     public ResponseEntity<QuestionResp> update(
             @Validated @RequestBody QuestionReq request,
@@ -66,6 +69,16 @@ public class QuestionController {
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         this.questionService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @CrossOrigin(origins = "http://localhost:5173")
+    @GetMapping("/quiz/{quizId}")
+    public ResponseEntity<List<Question>> getQuestionsByQuizId(@PathVariable Long quizId) {
+        List<Question> questions = questionService.getQuestionsByIdQuiz(quizId);
+        if (questions.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Retorna 204 No Content si no se encuentran preguntas
+        }
+        return ResponseEntity.ok(questions); // Retorna 200 OK con la lista de preguntas
     }
 
 }
