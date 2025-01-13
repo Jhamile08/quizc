@@ -1,10 +1,10 @@
 package com.riwi.riwi_mindset.infraestructure.services;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 
 import com.riwi.riwi_mindset.api.dto.request.ResultTestReq;
 import com.riwi.riwi_mindset.api.dto.response.ResultTestResp;
@@ -18,8 +18,8 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class ResultTestService implements IResultTestService{
-     @Autowired
+public class ResultTestService implements IResultTestService {
+    @Autowired
     private final ResultTestRepository resultTestRepository;
 
     @Override
@@ -35,7 +35,7 @@ public class ResultTestService implements IResultTestService{
     @Override
     public void delete(Integer id) {
         this.resultTestRepository.delete(this.find(id));
-        
+
     }
 
     @Override
@@ -60,37 +60,26 @@ public class ResultTestService implements IResultTestService{
                 .map(this::entityToResp);
     }
 
-    @Override
-    public ResultTestResp update(ResultTestReq request, Integer id) {
-        ResultTest resultTest = this.find(id);
-        resultTest = this.requestToEntity(request);
-
-        resultTest.setIdResultTest(id);
-        resultTest.setId_coder(request.getId_coder());
-        resultTest.setResult(request.getResult());
-       
-        return this.entityToResp(this.resultTestRepository.save(resultTest));
-
-    }
     private ResultTest requestToEntity(ResultTestReq request) {
         ResultTest resultTest = new ResultTest();
         resultTest.setId_coder(request.getId_coder());
         resultTest.setResult(request.getResult());
         return resultTest;
     }
-    private ResultTestResp entityToResp(ResultTest entity){
+
+    private ResultTestResp entityToResp(ResultTest entity) {
 
         return ResultTestResp.builder()
-                    .idResultTest(entity.getIdResultTest())
-                    .id_coder(entity.getId_coder())
-                    .result(entity.getResult())
-                    .build();
+                .idResultTest(entity.getIdResultTest())
+                .id_coder(entity.getId_coder())
+                .result(entity.getResult())
+                .build();
 
-    }    
-  
+    }
+
     private ResultTest find(Integer id) {
         return this.resultTestRepository.findById(id)
-        .orElseThrow(()-> new BadRequestException("No hay puntahes con el id suministrado"));
+                .orElseThrow(() -> new BadRequestException("No hay puntahes con el id suministrado"));
     }
-       
+
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,13 +55,6 @@ public class QuestionController {
     public ResponseEntity<QuestionResp> insert(
             @Validated @RequestBody QuestionReq request) {
         return ResponseEntity.ok(this.questionService.create(request));
-    }
-
-    @PutMapping(path = "/{id}")
-    public ResponseEntity<QuestionResp> update(
-            @Validated @RequestBody QuestionReq request,
-            @PathVariable Integer id) {
-        return ResponseEntity.ok(this.questionService.update(request, id));
     }
 
     @DeleteMapping(path = "/{id}")

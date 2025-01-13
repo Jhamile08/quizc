@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.riwi.riwi_mindset.api.dto.request.QuestionReq;
 import com.riwi.riwi_mindset.api.dto.response.QuestionResp;
@@ -22,6 +23,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class QuestionService implements IQuestionService {
     @Autowired
     private final QuestionRepository questionRepository;
@@ -59,17 +61,6 @@ public class QuestionService implements IQuestionService {
 
         return this.questionRepository.findAll(pagination)
                 .map(this::entityToResp);
-    }
-
-    @Override
-    public QuestionResp update(QuestionReq request, Integer id) {
-        Question question = this.find(id);
-        question = this.requestToEntity(request);
-        question.setIdQuestion(question.getIdQuestion());
-        question.setQuiz(question.getQuiz());
-        question.setQuestion(question.getQuestion());
-        question.setAnswers(question.getAnswers());
-        return this.entityToResp(this.questionRepository.save(question));
     }
 
     private Question requestToEntity(QuestionReq request) {

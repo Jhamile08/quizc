@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.riwi.riwi_mindset.api.dto.request.QuizReq;
 import com.riwi.riwi_mindset.api.dto.response.QuizResp;
@@ -18,6 +19,7 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class QuizService implements IQuizService {
 
     @Autowired
@@ -32,18 +34,6 @@ public class QuizService implements IQuizService {
     @Override
     public QuizResp get(Long id) {
         return this.entityToResp(this.find(id));
-    }
-
-    @Override
-    public QuizResp update(QuizReq request, Long id) {
-        Quiz quiz = this.find(id);
-        quiz = this.requestToEntity(request);
-        quiz.setId(quiz.getId());
-        quiz.setImg(quiz.getImg());
-        quiz.setTitle(quiz.getTitle());
-        quiz.setDescription(quiz.getDescription());
-        quiz.setQuantityQuestions(quiz.getQuantityQuestions());
-        return this.entityToResp(this.quizRepository.save(quiz));
     }
 
     @Override
