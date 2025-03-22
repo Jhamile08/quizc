@@ -63,7 +63,7 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+    @CrossOrigin(origins = "*")
     @GetMapping("/quiz/{quizId}")
     public ResponseEntity<List<Question>> getQuestionsByQuizId(@PathVariable Long quizId) {
         List<Question> questions = questionService.getQuestionsByIdQuiz(quizId);
