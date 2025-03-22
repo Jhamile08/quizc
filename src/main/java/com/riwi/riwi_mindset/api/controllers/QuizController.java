@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/quiz")
-@CrossOrigin(origins = "https://quizc-react.vercel.app")
+@CrossOrigin(origins = "*")
 @AllArgsConstructor
 public class QuizController {
     @Autowired
